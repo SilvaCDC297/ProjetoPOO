@@ -1,0 +1,5 @@
+Projeto POO – Gestão de Reservas de Espaços Desportivos
+Grupo: Dinis Alves (pv28377), João Silva (pv27638), Lara Pereira (pv33163)
+
+Repositório do código-fonte (GitHub):
+https://github.com/SilvaCDC297/ProjetoPOO
