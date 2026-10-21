@@ -1,0 +1,25 @@
+@startuml
+title Diagrama de Estados – Ciclo de Vida da Reserva (complementar)
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam state {
+  BackgroundColor #F4F8FF
+  BorderColor #2F5597
+}
+
+[*] --> PENDENTE : criar()
+PENDENTE --> CONFIRMADA : confirmar()\n[administrador, dentro do prazo]
+PENDENTE --> CANCELADA : cancelar()\n[dono ou administrador]
+PENDENTE --> EXPIRADA : expirar()\n[prazo de confirmação ultrapassado]
+CONFIRMADA --> CONCLUIDA : concluir()\n[hora de fim ultrapassada]
+CONFIRMADA --> CANCELADA : cancelar()\n[dono ou administrador]
+CANCELADA --> [*]
+EXPIRADA --> [*]
+CONCLUIDA --> [*]
+
+note right of PENDENTE
+  PENDENTE e CONFIRMADA bloqueiam o espaço
+  nesse horário (sem sobreposições).
+  CANCELADA, EXPIRADA e CONCLUIDA libertam-no.
+end note
+@enduml

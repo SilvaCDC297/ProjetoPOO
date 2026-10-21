@@ -1,0 +1,74 @@
+@startuml
+title Diagrama de Classes – Hierarquia de Exceções
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam class {
+  BackgroundColor #FFF6F0
+  BorderColor #C55A11
+}
+left to right direction
+hide empty members
+
+class Exception <<linguagem>>
+
+class AplicacaoException {
+  - mensagem : string
+  - codigo : string
+  + getMensagem() : string
+  + getCodigo() : string
+}
+
+class AutenticacaoException
+class LoginInvalidoException
+class NaoAutenticadoException
+class PermissaoNegadaException
+
+class EntidadeInexistenteException
+class UtilizadorInexistenteException
+class EspacoInexistenteException
+class ReservaInexistenteException
+
+class DadosInvalidosException
+class EmailJaRegistadoException
+class EspacoIndisponivelException
+
+class ReservaException
+class ConflitoHorarioException
+class TransicaoEstadoInvalidaException
+
+class PersistenciaException {
+  - caminhoFicheiro : string
+}
+class FicheiroInexistenteException
+class FicheiroCorrompidoException
+
+Exception <|-- AplicacaoException
+AplicacaoException <|-- AutenticacaoException
+AutenticacaoException <|-- LoginInvalidoException
+AutenticacaoException <|-- NaoAutenticadoException
+AutenticacaoException <|-- PermissaoNegadaException
+
+AplicacaoException <|-- EntidadeInexistenteException
+EntidadeInexistenteException <|-- UtilizadorInexistenteException
+EntidadeInexistenteException <|-- EspacoInexistenteException
+EntidadeInexistenteException <|-- ReservaInexistenteException
+
+AplicacaoException <|-- DadosInvalidosException
+DadosInvalidosException <|-- EmailJaRegistadoException
+
+AplicacaoException <|-- ReservaException
+ReservaException <|-- ConflitoHorarioException
+ReservaException <|-- TransicaoEstadoInvalidaException
+ReservaException <|-- EspacoIndisponivelException
+
+AplicacaoException <|-- PersistenciaException
+PersistenciaException <|-- FicheiroInexistenteException
+PersistenciaException <|-- FicheiroCorrompidoException
+
+note right of AplicacaoException
+  Os controladores capturam AplicacaoException
+  e apresentam a mensagem ao utilizador.
+  Erros inesperados são registados em log e
+  mostram uma página de erro genérica.
+end note
+@enduml

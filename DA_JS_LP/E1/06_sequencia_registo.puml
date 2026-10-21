@@ -1,0 +1,44 @@
+@startuml
+title Diagrama de Sequência – UC01 Registar utilizador
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam sequence {
+  ParticipantBackgroundColor #F4F8FF
+  ParticipantBorderColor #2F5597
+  ActorBorderColor #2F5597
+  LifeLineBorderColor #7F7F7F
+}
+autonumber
+actor Visitante
+participant AuthController
+participant GestorUtilizadores
+participant RepositorioUtilizadores
+participant UtilizadorNormal
+
+Visitante -> AuthController : registo(nome, email, password)
+activate AuthController
+AuthController -> GestorUtilizadores : registar(nome, email, password)
+activate GestorUtilizadores
+GestorUtilizadores -> GestorUtilizadores : validarDados(nome, email, password)
+alt dados inválidos
+  GestorUtilizadores --> AuthController : throw DadosInvalidosException
+  AuthController --> Visitante : mostra erros no formulário
+else dados válidos
+  GestorUtilizadores -> RepositorioUtilizadores : listar() / procurar por email
+  RepositorioUtilizadores --> GestorUtilizadores : utilizadores
+  alt email já registado
+    GestorUtilizadores --> AuthController : throw EmailJaRegistadoException
+    AuthController --> Visitante : "Email já registado"
+  else email disponível
+    GestorUtilizadores -> RepositorioUtilizadores : proximoId()
+    RepositorioUtilizadores --> GestorUtilizadores : id
+    GestorUtilizadores -> UtilizadorNormal ** : criar(id, nome, email, hash(password))
+    GestorUtilizadores -> RepositorioUtilizadores : adicionar(utilizador)
+    RepositorioUtilizadores -> RepositorioUtilizadores : guardar() (ficheiro JSON)
+    GestorUtilizadores --> AuthController : utilizador
+    deactivate GestorUtilizadores
+    AuthController --> Visitante : redireciona para o login
+  end
+end
+deactivate AuthController
+@enduml

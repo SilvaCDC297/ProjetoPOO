@@ -1,0 +1,101 @@
+@startuml
+title Diagrama de Casos de Uso – Gestão de Reservas de Espaços Desportivos
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName DejaVu Sans
+skinparam usecase {
+  BackgroundColor #F4F8FF
+  BorderColor #2F5597
+}
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #2F5597
+}
+
+actor "Visitante\n(não autenticado)" as V
+actor "Utilizador" as U
+actor "Administrador" as A
+actor "Sistema\n(tarefas automáticas)" as S
+
+U <|-- A
+
+rectangle "Sistema de Gestão de Reservas de Espaços Desportivos" {
+
+  package "Gestão de Utilizadores" {
+    usecase "UC01\nRegistar utilizador" as UC01
+    usecase "UC02\nEfetuar login" as UC02
+    usecase "UC03\nTerminar sessão" as UC03
+    usecase "UC04\nConsultar perfil" as UC04
+    usecase "UC05\nEditar perfil" as UC05
+    usecase "UC17\nGerir utilizadores" as UC17
+  }
+
+  package "Gestão de Espaços" {
+    usecase "UC06\nListar espaços" as UC06
+    usecase "UC07\nConsultar detalhe\ndo espaço" as UC07
+    usecase "UC08\nAdicionar espaço" as UC08
+    usecase "UC09\nAlterar espaço" as UC09
+    usecase "UC10\nRemover espaço" as UC10
+    usecase "UC11\nGerir equipamentos\ndo espaço" as UC11
+  }
+
+  package "Gestão de Reservas" {
+    usecase "UC12\nCriar reserva" as UC12
+    usecase "UC13\nConsultar reservas" as UC13
+    usecase "UC14\nAlterar reserva" as UC14
+    usecase "UC15\nCancelar reserva" as UC15
+    usecase "UC16\nConfirmar reserva" as UC16
+    usecase "UC22\nValidar horário\ne conflitos" as UC22
+  }
+
+  package "Relatórios" {
+    usecase "UC18\nVisualizar relatórios\ne estatísticas" as UC18
+  }
+
+  package "Processos automáticos" {
+    usecase "UC19\nExpirar reservas\npendentes" as UC19
+    usecase "UC20\nConcluir reservas\nterminadas" as UC20
+    usecase "UC21\nCarregar dados\nno arranque" as UC21
+  }
+}
+
+V --> UC01
+V --> UC02
+
+U --> UC03
+U --> UC04
+U --> UC05
+U --> UC06
+U --> UC07
+U --> UC12
+U --> UC13
+U --> UC14
+U --> UC15
+
+UC08 <-- A
+UC09 <-- A
+UC10 <-- A
+UC11 <-- A
+UC16 <-- A
+UC17 <-- A
+UC18 <-- A
+
+UC19 <-- S
+UC20 <-- S
+UC21 <-- S
+
+UC12 .> UC22 : <<include>>
+UC14 .> UC22 : <<include>>
+
+note right of UC13
+  Utilizador: vê as suas reservas.
+  Administrador: vê todas as reservas.
+end note
+
+note as N2
+  A gravação em ficheiro é feita em todas as operações
+  que alteram dados (UC01, UC05, UC08 a UC12,
+  UC14 a UC17, UC19 e UC20).
+end note
+@enduml

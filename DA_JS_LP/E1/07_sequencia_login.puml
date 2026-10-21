@@ -1,0 +1,43 @@
+@startuml
+title Diagrama de Sequência – UC02 Efetuar login
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam sequence {
+  ParticipantBackgroundColor #F4F8FF
+  ParticipantBorderColor #2F5597
+  ActorBorderColor #2F5597
+  LifeLineBorderColor #7F7F7F
+}
+autonumber
+actor Visitante
+participant AuthController
+participant GestorUtilizadores
+participant RepositorioUtilizadores
+participant Utilizador
+participant SessaoAutenticacao
+
+Visitante -> AuthController : login(email, password)
+activate AuthController
+AuthController -> GestorUtilizadores : autenticar(email, password)
+activate GestorUtilizadores
+GestorUtilizadores -> RepositorioUtilizadores : procurar por email
+RepositorioUtilizadores --> GestorUtilizadores : utilizador ou nulo
+alt utilizador não encontrado
+  GestorUtilizadores --> AuthController : throw LoginInvalidoException
+else utilizador encontrado
+  GestorUtilizadores -> Utilizador : verificarPassword(password)
+  Utilizador --> GestorUtilizadores : resultado
+  alt password incorreta
+    GestorUtilizadores --> AuthController : throw LoginInvalidoException
+  else password correta
+    GestorUtilizadores --> AuthController : utilizador
+    deactivate GestorUtilizadores
+    AuthController -> SessaoAutenticacao : iniciar(utilizador)
+    AuthController --> Visitante : redireciona para a lista de espaços
+  end
+end
+opt LoginInvalidoException
+  AuthController --> Visitante : "Email ou password inválidos"
+end
+deactivate AuthController
+@enduml

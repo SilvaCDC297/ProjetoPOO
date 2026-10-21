@@ -1,0 +1,195 @@
+@startuml
+title Diagrama de Classes – Arquitetura em Camadas (Apresentação, Serviços e Persistência)
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam defaultFontName DejaVu Sans
+skinparam class {
+  BackgroundColor #F4F8FF
+  BorderColor #2F5597
+}
+skinparam package {
+  BorderColor #7F7F7F
+  FontStyle bold
+}
+hide empty members
+
+package "Apresentação (interface web)" {
+  class AuthController {
+    + registo(nome, email, password) : void
+    + login(email, password) : void
+    + logout() : void
+  }
+  class UtilizadoresController {
+    + perfil() : Utilizador
+    + editarPerfil(nome, email) : void
+    + listar() : List<Utilizador>
+    + alterarPerfil(id, perfil) : void
+  }
+  class EspacosController {
+    + listar() : List<EspacoDesportivo>
+    + detalhe(id) : EspacoDesportivo
+    + adicionar(dados) : void
+    + alterar(id, dados) : void
+    + remover(id) : void
+    + gerirEquipamento(idEspaco, dados) : void
+  }
+  class ReservasController {
+    + criar(espacoId, data, inicio, fim, n) : void
+    + consultar() : List<Reserva>
+    + alterar(id, data, inicio, fim, n) : void
+    + cancelar(id) : void
+    + confirmar(id) : void
+  }
+  class RelatoriosController {
+    + painel(inicio, fim) : void
+  }
+}
+
+package "Serviços (lógica de negócio)" {
+  class SessaoAutenticacao {
+    - utilizadorAtual : Utilizador
+    + iniciar(u : Utilizador) : void
+    + terminar() : void
+    + estaAutenticado() : bool
+    + obterUtilizador() : Utilizador
+    + exigirAdministrador() : void
+  }
+  class GestorUtilizadores {
+    + registar(nome, email, password) : Utilizador
+    + autenticar(email, password) : Utilizador
+    + obterPorId(id) : Utilizador
+    + listar() : List<Utilizador>
+    + atualizarPerfil(id, nome, email) : void
+    + alterarPassword(id, atual, nova) : void
+    + alterarTipoPerfil(id, perfil) : void
+    + remover(id) : void
+  }
+  class GestorEspacos {
+    + adicionar(dados) : EspacoDesportivo
+    + alterar(id, dados) : void
+    + remover(id) : void
+    + obter(id) : EspacoDesportivo
+    + listar() : List<EspacoDesportivo>
+    + listarDisponiveis() : List<EspacoDesportivo>
+    + adicionarEquipamento(idEspaco, e) : void
+    + removerEquipamento(idEspaco, idEq) : void
+  }
+  class FabricaEspacos {
+    + {static} criar(tipo : TipoEspaco, dados) : EspacoDesportivo
+  }
+  class GestorReservas {
+    + criar(u, espacoId, data, inicio, fim, n) : Reserva
+    + alterar(id, solicitante, data, inicio, fim, n) : void
+    + cancelar(id, solicitante) : void
+    + confirmar(id) : void
+    + obter(id) : Reserva
+    + listarPorUtilizador(idUtilizador) : List<Reserva>
+    + listarTodas() : List<Reserva>
+    + verificarConflito(espaco, data, inicio, fim, ignorarId) : void
+    + expirarPendentes(agora : DateTime) : int
+    + concluirTerminadas(agora : DateTime) : int
+    - validarHorario(espaco, data, inicio, fim) : void
+  }
+  class GestorRelatorios {
+    + totalReservas() : int
+    + reservasPorEstado() : List<LinhaRelatorio>
+    + reservasPorEspaco() : List<LinhaRelatorio>
+    + reservasPorPeriodo(inicio, fim, agrupamento) : List<LinhaRelatorio>
+    + espacosMaisUtilizados(top : int) : List<LinhaRelatorio>
+    + taxaOcupacao(inicio, fim) : List<LinhaRelatorio>
+  }
+  class LinhaRelatorio {
+    + rotulo : string
+    + valor : double
+  }
+  class AgendadorReservas {
+    - intervalo : Duration
+    + iniciar() : void
+    + parar() : void
+    - executar() : void
+  }
+  class ConfiguracaoSistema {
+    + {static} horaAbertura : Time = 08:00
+    + {static} horaFecho : Time = 22:00
+    + {static} duracaoMinima : Duration = 30 min
+    + {static} prazoConfirmacao : Duration = 24 h
+    + {static} intervaloAgendador : Duration = 1 min
+  }
+}
+
+package "Persistência (ficheiros JSON)" {
+  interface IRepositorio<T> {
+    + listar() : List<T>
+    + obterPorId(id : int) : T
+    + adicionar(item : T) : void
+    + atualizar(item : T) : void
+    + remover(id : int) : void
+    + proximoId() : int
+  }
+  abstract class RepositorioJson<T> {
+    # caminhoFicheiro : string
+    # itens : List<T>
+    + carregar() : void
+    # guardar() : void
+    # {abstract} serializar(itens) : string
+    # {abstract} desserializar(texto) : List<T>
+  }
+  class RepositorioUtilizadores
+  class RepositorioEspacos
+  class RepositorioReservas
+  class VerificadorConsistencia {
+    + verificar(utilizadores, espacos, reservas) : void
+  }
+}
+
+package "Modelo de domínio" as dominio {
+  class Utilizador
+  class EspacoDesportivo
+  class Reserva
+}
+
+' Apresentação -> Serviços
+AuthController ..> GestorUtilizadores
+AuthController ..> SessaoAutenticacao
+UtilizadoresController ..> GestorUtilizadores
+UtilizadoresController ..> SessaoAutenticacao
+EspacosController ..> GestorEspacos
+EspacosController ..> SessaoAutenticacao
+ReservasController ..> GestorReservas
+ReservasController ..> SessaoAutenticacao
+RelatoriosController ..> GestorRelatorios
+RelatoriosController ..> SessaoAutenticacao
+
+' Serviços entre si
+GestorEspacos ..> FabricaEspacos
+GestorReservas --> GestorEspacos
+GestorRelatorios --> GestorEspacos
+AgendadorReservas --> GestorReservas
+GestorReservas ..> ConfiguracaoSistema
+GestorRelatorios ..> LinhaRelatorio
+
+' Serviços -> Persistência
+GestorUtilizadores --> "1" IRepositorio : repositório
+GestorEspacos --> "1" IRepositorio : repositório
+GestorReservas --> "1" IRepositorio : repositório
+GestorRelatorios --> "1" IRepositorio : repositório
+
+' Persistência
+IRepositorio <|.. RepositorioJson
+RepositorioJson <|-- RepositorioUtilizadores
+RepositorioJson <|-- RepositorioEspacos
+RepositorioJson <|-- RepositorioReservas
+RepositorioUtilizadores ..> Utilizador : <<T>>
+RepositorioEspacos ..> EspacoDesportivo : <<T>>
+RepositorioReservas ..> Reserva : <<T>>
+VerificadorConsistencia ..> RepositorioReservas
+VerificadorConsistencia ..> RepositorioEspacos
+VerificadorConsistencia ..> RepositorioUtilizadores
+
+note bottom of RepositorioJson
+  Escrita atómica (ficheiro temporário + substituição)
+  para garantir consistência. Ficheiro inexistente
+  -> FicheiroInexistenteException; JSON inválido
+  -> FicheiroCorrompidoException.
+end note
+@enduml

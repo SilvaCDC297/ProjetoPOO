@@ -1,0 +1,170 @@
+@startuml
+title Diagrama de Classes – Modelo de Domínio
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam defaultFontName DejaVu Sans
+skinparam class {
+  BackgroundColor #F4F8FF
+  BorderColor #2F5597
+}
+hide empty members
+
+enum Perfil {
+  ADMINISTRADOR
+  NORMAL
+}
+enum TipoEspaco {
+  CAMPO_FUTEBOL
+  COURT_TENIS
+  PAVILHAO
+  SALA_FITNESS
+}
+enum EstadoEspaco {
+  DISPONIVEL
+  INDISPONIVEL
+}
+enum EstadoReserva {
+  PENDENTE
+  CONFIRMADA
+  CANCELADA
+  CONCLUIDA
+  EXPIRADA
+}
+enum EstadoEquipamento {
+  DISPONIVEL
+  EM_MANUTENCAO
+  INDISPONIVEL
+}
+
+abstract class Utilizador {
+  - id : int
+  - nome : string
+  - email : string
+  - passwordHash : string
+  - dataRegisto : DateTime
+  + {abstract} getPerfil() : Perfil
+  + {abstract} podeAdministrar() : bool
+  + verificarPassword(password : string) : bool
+  + alterarPassword(atual : string, nova : string) : void
+  + atualizarDados(nome : string, email : string) : void
+}
+
+class Administrador {
+  + getPerfil() : Perfil
+  + podeAdministrar() : bool
+}
+
+class UtilizadorNormal {
+  + getPerfil() : Perfil
+  + podeAdministrar() : bool
+}
+
+abstract class EspacoDesportivo {
+  - id : int
+  - nome : string
+  - localizacao : string
+  - capacidadeMaxima : int
+  - estado : EstadoEspaco
+  + {abstract} getTipo() : TipoEspaco
+  + {abstract} getDuracaoMaximaReserva() : Duration
+  + {abstract} getDetalhes() : string
+  + estaDisponivel() : bool
+  + alterarEstado(estado : EstadoEspaco) : void
+  + validarParticipantes(n : int) : void
+  + adicionarEquipamento(e : Equipamento) : void
+  + removerEquipamento(idEquipamento : int) : void
+}
+
+class CampoFutebol {
+  - tipoPiso : string
+  - formato : string
+  + getTipo() : TipoEspaco
+  + getDuracaoMaximaReserva() : Duration
+  + getDetalhes() : string
+}
+
+class CourtTenis {
+  - superficie : string
+  - coberto : bool
+  + getTipo() : TipoEspaco
+  + getDuracaoMaximaReserva() : Duration
+  + getDetalhes() : string
+}
+
+class Pavilhao {
+  - modalidades : List<string>
+  - numeroBalnearios : int
+  + getTipo() : TipoEspaco
+  + getDuracaoMaximaReserva() : Duration
+  + getDetalhes() : string
+}
+
+class SalaFitness {
+  - climatizada : bool
+  - numeroTapetes : int
+  + getTipo() : TipoEspaco
+  + getDuracaoMaximaReserva() : Duration
+  + getDetalhes() : string
+}
+
+class Equipamento {
+  - id : int
+  - nome : string
+  - quantidadeDisponivel : int
+  - estado : EstadoEquipamento
+  + estaOperacional() : bool
+  + atualizarQuantidade(q : int) : void
+  + alterarEstado(estado : EstadoEquipamento) : void
+}
+
+class Reserva {
+  - id : int
+  - data : Date
+  - horaInicio : Time
+  - horaFim : Time
+  - numParticipantes : int
+  - estado : EstadoReserva
+  - dataCriacao : DateTime
+  - prazoConfirmacao : DateTime
+  + duracao() : Duration
+  + sobrepoe(outra : Reserva) : bool
+  + bloqueiaEspaco() : bool
+  + expirou(agora : DateTime) : bool
+  + terminou(agora : DateTime) : bool
+  + alterarHorario(data : Date, inicio : Time, fim : Time) : void
+  + confirmar() : void
+  + cancelar() : void
+  + concluir() : void
+  + expirar() : void
+  - mudarEstado(novo : EstadoReserva) : void
+}
+
+Utilizador <|-- Administrador
+Utilizador <|-- UtilizadorNormal
+
+EspacoDesportivo <|-- CampoFutebol
+EspacoDesportivo <|-- CourtTenis
+EspacoDesportivo <|-- Pavilhao
+EspacoDesportivo <|-- SalaFitness
+
+EspacoDesportivo "1" *-- "0..*" Equipamento : possui >
+
+Reserva "0..*" --> "1" Utilizador : efetuada por >
+Reserva "0..*" --> "1" EspacoDesportivo : reserva >
+
+Utilizador ..> Perfil
+EspacoDesportivo ..> TipoEspaco
+EspacoDesportivo ..> EstadoEspaco
+Equipamento ..> EstadoEquipamento
+Reserva ..> EstadoReserva
+
+note right of Reserva
+  Transições válidas (em mudarEstado):
+  PENDENTE → CONFIRMADA | CANCELADA | EXPIRADA
+  CONFIRMADA → CONCLUIDA | CANCELADA
+  Qualquer outra lança
+  TransicaoEstadoInvalidaException.
+  Reservas PENDENTE e CONFIRMADA
+  bloqueiam o espaço (bloqueiaEspaco).
+end note
+@enduml

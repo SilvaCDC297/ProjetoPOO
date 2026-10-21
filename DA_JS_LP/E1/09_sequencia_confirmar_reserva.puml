@@ -1,0 +1,58 @@
+@startuml
+title Diagrama de Sequência – UC16 Confirmar reserva
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam sequence {
+  ParticipantBackgroundColor #F4F8FF
+  ParticipantBorderColor #2F5597
+  ActorBorderColor #2F5597
+  LifeLineBorderColor #7F7F7F
+}
+autonumber
+actor Administrador
+participant ReservasController
+participant SessaoAutenticacao
+participant GestorReservas
+participant RepositorioReservas
+participant Reserva
+
+Administrador -> ReservasController : confirmar(idReserva)
+activate ReservasController
+ReservasController -> SessaoAutenticacao : exigirAdministrador()
+alt não é administrador
+  SessaoAutenticacao --> ReservasController : throw PermissaoNegadaException
+  ReservasController --> Administrador : "Acesso negado"
+else é administrador
+  ReservasController -> GestorReservas : confirmar(idReserva)
+  activate GestorReservas
+  GestorReservas -> RepositorioReservas : obterPorId(idReserva)
+  alt reserva não existe
+    RepositorioReservas --> GestorReservas : nulo
+    GestorReservas --> ReservasController : throw ReservaInexistenteException
+  else reserva existe
+    RepositorioReservas --> GestorReservas : reserva
+    GestorReservas -> Reserva : expirou(agora)
+    alt prazo de confirmação ultrapassado
+      GestorReservas -> Reserva : expirar()
+      GestorReservas -> RepositorioReservas : atualizar(reserva)
+      GestorReservas --> ReservasController : throw TransicaoEstadoInvalidaException
+    else dentro do prazo
+      GestorReservas -> Reserva : confirmar()
+      Reserva -> Reserva : mudarEstado(CONFIRMADA)
+      note right
+        Se o estado atual não for PENDENTE
+        -> throw TransicaoEstadoInvalidaException
+      end note
+      GestorReservas -> RepositorioReservas : atualizar(reserva)
+      RepositorioReservas -> RepositorioReservas : guardar() (ficheiro JSON)
+      GestorReservas --> ReservasController : ok
+      deactivate GestorReservas
+      ReservasController --> Administrador : "Reserva confirmada"
+    end
+  end
+end
+opt AplicacaoException
+  ReservasController --> Administrador : mostra mensagem de erro
+end
+deactivate ReservasController
+@enduml

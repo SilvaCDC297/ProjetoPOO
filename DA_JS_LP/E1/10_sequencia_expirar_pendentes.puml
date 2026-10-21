@@ -1,0 +1,46 @@
+@startuml
+title Diagrama de Sequência – UC19 e UC20 Processos automáticos de reservas
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+skinparam sequence {
+  ParticipantBackgroundColor #F4F8FF
+  ParticipantBorderColor #2F5597
+  ActorBorderColor #2F5597
+  LifeLineBorderColor #7F7F7F
+}
+autonumber
+participant AgendadorReservas
+participant GestorReservas
+participant RepositorioReservas
+participant Reserva
+
+loop a cada intervalo (e no arranque da aplicação)
+  AgendadorReservas -> GestorReservas : expirarPendentes(agora)
+  activate GestorReservas
+  GestorReservas -> RepositorioReservas : listar()
+  RepositorioReservas --> GestorReservas : reservas
+  loop para cada reserva PENDENTE
+    GestorReservas -> Reserva : expirou(agora)
+    alt prazo ultrapassado
+      GestorReservas -> Reserva : expirar()
+      GestorReservas -> RepositorioReservas : atualizar(reserva)
+    end
+  end
+  GestorReservas --> AgendadorReservas : nº de reservas expiradas
+  deactivate GestorReservas
+
+  AgendadorReservas -> GestorReservas : concluirTerminadas(agora)
+  activate GestorReservas
+  GestorReservas -> RepositorioReservas : listar()
+  RepositorioReservas --> GestorReservas : reservas
+  loop para cada reserva CONFIRMADA
+    GestorReservas -> Reserva : terminou(agora)
+    alt hora de fim ultrapassada
+      GestorReservas -> Reserva : concluir()
+      GestorReservas -> RepositorioReservas : atualizar(reserva)
+    end
+  end
+  GestorReservas --> AgendadorReservas : nº de reservas concluídas
+  deactivate GestorReservas
+end
+@enduml
