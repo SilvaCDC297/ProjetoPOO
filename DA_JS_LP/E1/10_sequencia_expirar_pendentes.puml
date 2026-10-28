@@ -1,46 +1,63 @@
 @startuml
-title Diagrama de Sequência – UC19 e UC20 Processos automáticos de reservas
+title Diagrama de Sequência – Processos Automáticos (Expirar e Concluir)
 skinparam shadowing false
-skinparam defaultFontName DejaVu Sans
+skinparam defaultFontName "Segoe UI"
 skinparam sequence {
   ParticipantBackgroundColor #F4F8FF
   ParticipantBorderColor #2F5597
   ActorBorderColor #2F5597
-  LifeLineBorderColor #7F7F7F
+  LifeLineBorderColor #2F5597
+  LifeLineBackgroundColor #E8F0FE
+  ArrowColor #2F5597
 }
-autonumber
+
 participant AgendadorReservas
 participant GestorReservas
 participant RepositorioReservas
 participant Reserva
 
-loop a cada intervalo (e no arranque da aplicação)
-  AgendadorReservas -> GestorReservas : expirarPendentes(agora)
-  activate GestorReservas
-  GestorReservas -> RepositorioReservas : listar()
-  RepositorioReservas --> GestorReservas : reservas
-  loop para cada reserva PENDENTE
-    GestorReservas -> Reserva : expirou(agora)
-    alt prazo ultrapassado
-      GestorReservas -> Reserva : expirar()
-      GestorReservas -> RepositorioReservas : atualizar(reserva)
-    end
-  end
-  GestorReservas --> AgendadorReservas : nº de reservas expiradas
-  deactivate GestorReservas
+AgendadorReservas -> GestorReservas : expirarPendentes()
+activate GestorReservas
 
-  AgendadorReservas -> GestorReservas : concluirTerminadas(agora)
-  activate GestorReservas
-  GestorReservas -> RepositorioReservas : listar()
-  RepositorioReservas --> GestorReservas : reservas
-  loop para cada reserva CONFIRMADA
-    GestorReservas -> Reserva : terminou(agora)
-    alt hora de fim ultrapassada
-      GestorReservas -> Reserva : concluir()
-      GestorReservas -> RepositorioReservas : atualizar(reserva)
-    end
-  end
-  GestorReservas --> AgendadorReservas : nº de reservas concluídas
-  deactivate GestorReservas
-end
+GestorReservas -> RepositorioReservas : listarPendentesExpiradas()
+activate RepositorioReservas
+RepositorioReservas --> GestorReservas : listaReservas
+deactivate RepositorioReservas
+
+GestorReservas -> Reserva : expirar()
+activate Reserva
+Reserva --> GestorReservas : estado = EXPIRADA
+deactivate Reserva
+
+GestorReservas -> RepositorioReservas : atualizar(reserva)
+activate RepositorioReservas
+RepositorioReservas -> RepositorioReservas : guardar()
+RepositorioReservas --> GestorReservas : ok
+deactivate RepositorioReservas
+
+GestorReservas --> AgendadorReservas : totalExpiradas
+deactivate GestorReservas
+
+AgendadorReservas -> GestorReservas : concluirTerminadas()
+activate GestorReservas
+
+GestorReservas -> RepositorioReservas : listarConfirmadasTerminadas()
+activate RepositorioReservas
+RepositorioReservas --> GestorReservas : listaReservas
+deactivate RepositorioReservas
+
+GestorReservas -> Reserva : concluir()
+activate Reserva
+Reserva --> GestorReservas : estado = CONCLUIDA
+deactivate Reserva
+
+GestorReservas -> RepositorioReservas : atualizar(reserva)
+activate RepositorioReservas
+RepositorioReservas -> RepositorioReservas : guardar()
+RepositorioReservas --> GestorReservas : ok
+deactivate RepositorioReservas
+
+GestorReservas --> AgendadorReservas : totalConcluidas
+deactivate GestorReservas
+
 @enduml

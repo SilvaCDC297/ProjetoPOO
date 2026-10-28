@@ -1,14 +1,16 @@
 @startuml
-title Diagrama de Sequência – UC18 Visualizar relatórios (taxa de ocupação)
+title Diagrama de Sequência – UC12 Relatório de Taxa de Ocupação
 skinparam shadowing false
-skinparam defaultFontName DejaVu Sans
+skinparam defaultFontName "Segoe UI"
 skinparam sequence {
   ParticipantBackgroundColor #F4F8FF
   ParticipantBorderColor #2F5597
   ActorBorderColor #2F5597
-  LifeLineBorderColor #7F7F7F
+  LifeLineBorderColor #2F5597
+  LifeLineBackgroundColor #E8F0FE
+  ArrowColor #2F5597
 }
-autonumber
+
 actor Administrador
 participant RelatoriosController
 participant SessaoAutenticacao
@@ -16,31 +18,33 @@ participant GestorRelatorios
 participant GestorEspacos
 participant RepositorioReservas
 
-Administrador -> RelatoriosController : painel(inicio, fim)
+Administrador -> RelatoriosController : obterRelatorioOcupacao(inicio, fim)
 activate RelatoriosController
+
 RelatoriosController -> SessaoAutenticacao : exigirAdministrador()
-alt não é administrador
-  SessaoAutenticacao --> RelatoriosController : throw PermissaoNegadaException
-  RelatoriosController --> Administrador : "Acesso negado"
-else é administrador
-  RelatoriosController -> GestorRelatorios : taxaOcupacao(inicio, fim)
-  activate GestorRelatorios
-  alt período inválido (fim < início)
-    GestorRelatorios --> RelatoriosController : throw DadosInvalidosException
-  else período válido
-    GestorRelatorios -> GestorEspacos : listar()
-    GestorEspacos --> GestorRelatorios : espaços
-    GestorRelatorios -> RepositorioReservas : listar()
-    RepositorioReservas --> GestorRelatorios : reservas
-    loop para cada espaço
-      GestorRelatorios -> GestorRelatorios : horasReservadas = soma da duração das reservas\nCONFIRMADA/CONCLUIDA no período
-      GestorRelatorios -> GestorRelatorios : horasDisponiveis = nº de dias x (fecho - abertura)
-      GestorRelatorios -> GestorRelatorios : taxa = horasReservadas / horasDisponiveis x 100
-    end
-    GestorRelatorios --> RelatoriosController : List<LinhaRelatorio>
-    deactivate GestorRelatorios
-    RelatoriosController --> Administrador : tabela e gráfico de barras
-  end
-end
+activate SessaoAutenticacao
+SessaoAutenticacao --> RelatoriosController : ok
+deactivate SessaoAutenticacao
+
+RelatoriosController -> GestorRelatorios : calcularTaxaOcupacao(inicio, fim)
+activate GestorRelatorios
+
+GestorRelatorios -> GestorEspacos : listar()
+activate GestorEspacos
+GestorEspacos --> GestorRelatorios : espacos
+deactivate GestorEspacos
+
+GestorRelatorios -> RepositorioReservas : listarPorPeriodo(inicio, fim)
+activate RepositorioReservas
+RepositorioReservas --> GestorRelatorios : reservas
+deactivate RepositorioReservas
+
+GestorRelatorios -> GestorRelatorios : calcularEstatisticas(espacos, reservas)
+
+GestorRelatorios --> RelatoriosController : dadosRelatorio
+deactivate GestorRelatorios
+
+RelatoriosController --> Administrador : apresenta tabela e gráficos de ocupação
 deactivate RelatoriosController
+
 @enduml

@@ -1,43 +1,48 @@
 @startuml
-title Diagrama de Sequência – UC02 Efetuar login
+title Diagrama de Sequência – UC02 Autenticação (Login)
 skinparam shadowing false
-skinparam defaultFontName DejaVu Sans
+skinparam defaultFontName "Segoe UI"
 skinparam sequence {
   ParticipantBackgroundColor #F4F8FF
   ParticipantBorderColor #2F5597
   ActorBorderColor #2F5597
-  LifeLineBorderColor #7F7F7F
+  LifeLineBorderColor #2F5597
+  LifeLineBackgroundColor #E8F0FE
+  ArrowColor #2F5597
 }
-autonumber
-actor Visitante
+
+actor Utilizador
 participant AuthController
 participant GestorUtilizadores
 participant RepositorioUtilizadores
-participant Utilizador
+participant UtilizadorEntidade as "Utilizador"
 participant SessaoAutenticacao
 
-Visitante -> AuthController : login(email, password)
+Utilizador -> AuthController : login(email, password)
 activate AuthController
+
 AuthController -> GestorUtilizadores : autenticar(email, password)
 activate GestorUtilizadores
-GestorUtilizadores -> RepositorioUtilizadores : procurar por email
-RepositorioUtilizadores --> GestorUtilizadores : utilizador ou nulo
-alt utilizador não encontrado
-  GestorUtilizadores --> AuthController : throw LoginInvalidoException
-else utilizador encontrado
-  GestorUtilizadores -> Utilizador : verificarPassword(password)
-  Utilizador --> GestorUtilizadores : resultado
-  alt password incorreta
-    GestorUtilizadores --> AuthController : throw LoginInvalidoException
-  else password correta
-    GestorUtilizadores --> AuthController : utilizador
-    deactivate GestorUtilizadores
-    AuthController -> SessaoAutenticacao : iniciar(utilizador)
-    AuthController --> Visitante : redireciona para a lista de espaços
-  end
-end
-opt LoginInvalidoException
-  AuthController --> Visitante : "Email ou password inválidos"
-end
+
+GestorUtilizadores -> RepositorioUtilizadores : procurarPorEmail(email)
+activate RepositorioUtilizadores
+RepositorioUtilizadores --> GestorUtilizadores : utilizador
+deactivate RepositorioUtilizadores
+
+GestorUtilizadores -> UtilizadorEntidade : verificarPassword(password)
+activate UtilizadorEntidade
+UtilizadorEntidade --> GestorUtilizadores : true
+deactivate UtilizadorEntidade
+
+GestorUtilizadores -> SessaoAutenticacao : iniciar(utilizador)
+activate SessaoAutenticacao
+SessaoAutenticacao --> GestorUtilizadores : ok
+deactivate SessaoAutenticacao
+
+GestorUtilizadores --> AuthController : utilizador
+deactivate GestorUtilizadores
+
+AuthController --> Utilizador : login efetuado com sucesso
 deactivate AuthController
+
 @enduml

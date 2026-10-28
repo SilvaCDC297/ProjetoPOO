@@ -1,67 +1,54 @@
 @startuml
-title Diagrama de Sequência – UC12 Criar reserva
+title Diagrama de Sequência – UC09 Criar Reserva
 skinparam shadowing false
-skinparam defaultFontName DejaVu Sans
+skinparam defaultFontName "Segoe UI"
 skinparam sequence {
   ParticipantBackgroundColor #F4F8FF
   ParticipantBorderColor #2F5597
   ActorBorderColor #2F5597
-  LifeLineBorderColor #7F7F7F
+  LifeLineBorderColor #2F5597
+  LifeLineBackgroundColor #E8F0FE
+  ArrowColor #2F5597
 }
-autonumber
+
 actor Utilizador
 participant ReservasController
 participant SessaoAutenticacao
 participant GestorReservas
 participant GestorEspacos
-participant EspacoDesportivo
 participant RepositorioReservas
 participant Reserva
 
-Utilizador -> ReservasController : criar(espacoId, data, inicio, fim, n)
+Utilizador -> ReservasController : criarReserva(espacoId, data, inicio, fim)
 activate ReservasController
+
 ReservasController -> SessaoAutenticacao : obterUtilizador()
-alt sem sessão iniciada
-  SessaoAutenticacao --> ReservasController : throw NaoAutenticadoException
-  ReservasController --> Utilizador : redireciona para o login
-else autenticado
-  SessaoAutenticacao --> ReservasController : utilizador
-  ReservasController -> GestorReservas : criar(utilizador, espacoId, data, inicio, fim, n)
-  activate GestorReservas
-  GestorReservas -> GestorEspacos : obter(espacoId)
-  GestorEspacos --> GestorReservas : espaço (ou throw EspacoInexistenteException)
-  GestorReservas -> EspacoDesportivo : estaDisponivel()
-  alt espaço indisponível
-    GestorReservas --> ReservasController : throw EspacoIndisponivelException
-  else espaço disponível
-    GestorReservas -> GestorReservas : validarHorario(espaco, data, inicio, fim)
-    note right
-      data não passada, fim > início,
-      dentro do horário de funcionamento,
-      duração <= espaco.getDuracaoMaximaReserva()
-      (senão throw DadosInvalidosException)
-    end note
-    GestorReservas -> EspacoDesportivo : validarParticipantes(n)
-    GestorReservas -> GestorReservas : verificarConflito(espaco, data, inicio, fim, nulo)
-    GestorReservas -> RepositorioReservas : listar() do espaço nessa data
-    RepositorioReservas --> GestorReservas : reservas
-    loop para cada reserva que bloqueia o espaço
-      GestorReservas -> Reserva : sobrepoe(nova)
-    end
-    alt existe sobreposição
-      GestorReservas --> ReservasController : throw ConflitoHorarioException
-    else sem sobreposição
-      GestorReservas -> Reserva ** : criar(estado = PENDENTE, prazoConfirmacao)
-      GestorReservas -> RepositorioReservas : adicionar(reserva)
-      RepositorioReservas -> RepositorioReservas : guardar() (ficheiro JSON)
-      GestorReservas --> ReservasController : reserva
-      deactivate GestorReservas
-      ReservasController --> Utilizador : "Reserva criada (pendente de confirmação)"
-    end
-  end
-end
-opt qualquer AplicacaoException
-  ReservasController --> Utilizador : mostra mensagem de erro no formulário
-end
+activate SessaoAutenticacao
+SessaoAutenticacao --> ReservasController : utilizador
+deactivate SessaoAutenticacao
+
+ReservasController -> GestorReservas : criar(utilizador, espacoId, data, inicio, fim)
+activate GestorReservas
+
+GestorReservas -> GestorEspacos : obter(espacoId)
+activate GestorEspacos
+GestorEspacos --> GestorReservas : espaco
+deactivate GestorEspacos
+
+GestorReservas -> GestorReservas : verificarConflito(espaco, data, inicio, fim)
+
+GestorReservas -> Reserva ** : criar(utilizador, espaco, data, inicio, fim, PENDENTE)
+
+GestorReservas -> RepositorioReservas : adicionar(reserva)
+activate RepositorioReservas
+RepositorioReservas -> RepositorioReservas : guardar()
+RepositorioReservas --> GestorReservas : ok
+deactivate RepositorioReservas
+
+GestorReservas --> ReservasController : reserva
+deactivate GestorReservas
+
+ReservasController --> Utilizador : reserva criada com sucesso (Pendente)
 deactivate ReservasController
+
 @enduml
