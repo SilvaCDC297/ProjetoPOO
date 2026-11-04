@@ -1,0 +1,31 @@
+======================================================================
+RELATÓRIO DE REPOSITÓRIO DO CÓDIGO-FONTE - ELEMENTO E3 (2%)
+ENTREGA 2 - IMPLEMENTAÇÃO DAS CLASSES
+SISTEMA DE GESTÃO DE RESERVAS DE ESPAÇOS DESPORTIVOS
+Unidade Curricular: Programação Orientada a Objetos (POO)
+======================================================================
+
+1. LINK DO REPOSITÓRIO GITHUB:
+https://github.com/SilvaCDC297/ProjetoPOO
+
+----------------------------------------------------------------------
+2. RAMO PRINCIPAL (DEFAULT BRANCH):
+main
+
+----------------------------------------------------------------------
+3. ELEMENTOS DO GRUPO E COLABORADORES REGISTADOS:
+- Elemento 1 (Criador do Repositório): João Silva - pv27638 (GitHub: @SilvaCDC297)
+- Elemento 2: Dinis Alves - pv28377 (GitHub: @Dinis-Alves1)
+- Elemento 3: Lara Pereira - pv33163
+
+----------------------------------------------------------------------
+4. DOCENTES DA UNIDADE CURRICULAR ADICIONADOS COMO COLABORADORES:
+- Docente Responsável: Adicionado com permissões de leitura/escrita.
+  Estado do Convite: Aceite / Pendente de Confirmação
+
+----------------------------------------------------------------------
+5. CONTROLO DE VERSIONAMENTO E COMMITS DA FASE 2:
+- Sistema de Controlo de Versões: Git & GitHub
+- Branch de Entrega: main
+- Conteúdo: Código-fonte das classes em C# (.NET 10), herança, polimorfismo, persistência JSON atómica e tratamento de exceções.
+======================================================================
