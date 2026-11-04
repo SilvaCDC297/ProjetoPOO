@@ -1,0 +1,22 @@
+ID_Tarefa;Fase_Entrega;Descricao_Tarefa;Estudante_Responsavel;Data_Prevista_Inicio;Data_Prevista_Fim;Data_Real_Conclusao;Percentagem_Execucao;Estado;Observacoes
+T01;Entrega 1;Levantamento e Especificação dos Casos de Uso (E0);Dinis Alves (pv28377);2026-09-25;2026-10-02;2026-09-30;100%;Concluído;Documento com 15 casos de uso detalhados
+T02;Entrega 1;Prototipagem das Interfaces Web (E0);João Silva (pv27638);2026-09-27;2026-10-05;2026-09-30;100%;Concluído;8 ecrãs HTML/CSS responsivos funcionais
+T03;Entrega 1;Elaboração do Diagrama UML de Casos de Uso (E1);Lara Pereira (pv33163);2026-09-28;2026-10-06;2026-09-30;100%;Concluído;Ficheiro casos_de_uso.puml e imagem PNG
+T04;Entrega 1;Elaboração do Diagrama UML de Classes de Domínio (E1);Dinis Alves (pv28377);2026-09-29;2026-10-08;2026-09-30;100%;Concluído;Ficheiro classes.puml e imagem PNG com herança e polimorfismo
+T05;Entrega 1;Elaboração dos Diagramas UML de Sequência (E1);João Silva (pv27638);2026-10-01;2026-10-10;2026-09-30;100%;Concluído;Fluxos de reserva, autenticação e aprovação
+T06;Entrega 1;Criação e Configuração do Repositório Git/GitHub (E2);João Silva (pv27638);2026-09-26;2026-10-03;2026-09-30;100%;Concluído;Repositório SilvaCDC297/ProjetoPOO e colaboradores convidados
+T07;Entrega 1;Preparação do Controlo de Progresso e Empacotamento ZIP (E4);Lara Pereira (pv33163);2026-10-02;2026-10-14;2026-09-30;100%;Concluído;Ficheiro de controlo e arquivo ZIP DA_JS_LP.zip
+T08;Entrega 2;Implementação do Esqueleto das Classes em C# (E5);Dinis Alves (pv28377);2026-10-16;2026-10-26;2026-10-28;100%;Concluído;Classes base e subclasses polimórficas implementadas
+T09;Entrega 2;Implementação dos Métodos de Domínio e Validações de Sobreposição;João Silva (pv27638);2026-10-20;2026-10-31;2026-10-28;100%;Concluído;Regras de não sobreposição, máquina de estados e cálculo de custos
+T10;Entrega 2;Implementação dos Mecanismos de Persistência em Ficheiros JSON;Lara Pereira (pv33163);2026-10-25;2026-11-03;2026-10-28;100%;Concluído;IPersistencia e PersistenciaFicheiro JSON com escrita atómica
+T11;Entrega 2;Tratamento de Exceções Customizadas de Domínio;Dinis Alves (pv28377);2026-10-28;2026-11-04;2026-10-28;100%;Concluído;Hierarquia completa SistemaReservasException e exceções derivadas
+T12;Entrega 2;Testes Unitários da Lógica na Consola e Submissão E2;Todos;2026-11-01;2026-11-05;2026-10-28;100%;Concluído;Bateria de testes em Program.cs validada com 100% sucesso
+T13;Entrega 3;Desenvolvimento da Interface Web e Rotas do Controlador (E5);João Silva (pv27638);2026-11-06;2026-11-20;;0%;Não Iniciado;Integração dos protótipos na framework web
+T14;Entrega 3;Implementação dos Formulários e Validações no Frontend;Lara Pereira (pv33163);2026-11-15;2026-11-28;;0%;Não Iniciado;Interface de reserva de recintos e equipamentos
+T15;Entrega 3;Implementação do Módulo de Relatórios e Gráficos;Dinis Alves (pv28377);2026-11-22;2026-12-05;;0%;Não Iniciado;Cálculo de taxas de ocupação e estatísticas
+T16;Entrega 3;Testes Integrados End-to-End e Submissão E3;Todos;2026-12-01;2026-12-09;;0%;Não Iniciado;Prazo limite Entrega 3: 09/12/2026
+T17;Entrega 4;Comentários e Documentação Integral do Código-Fonte;Dinis Alves (pv28377);2026-12-10;2026-12-16;;0%;Não Iniciado;Docstrings / XML docs em todas as classes
+T18;Entrega 4;Elaboração dos Slides da Apresentação em PowerPoint (E6);João Silva (pv27638);2026-12-12;2026-12-18;;0%;Não Iniciado;Apresentação da solução e arquitetura
+T19;Entrega 4;Gravação do Vídeo e Áudio de Apresentação (E7 - MPEG-4);Lara Pereira (pv33163);2026-12-15;2026-12-20;;0%;Não Iniciado;Vídeo com apresentação do trabalho
+T20;Entrega 4;Gravação do Vídeo e Áudio de Demonstração (E8 - MPEG-4);Dinis Alves (pv28377);2026-12-16;2026-12-21;;0%;Não Iniciado;Vídeo funcional da aplicação a executar
+T21;Entrega 5;Revisão Global e Consolidação Final da Aplicação;Todos;2026-12-21;2026-12-23;;0%;Não Iniciado;Prazo limite Entrega 5: 23/12/2026
