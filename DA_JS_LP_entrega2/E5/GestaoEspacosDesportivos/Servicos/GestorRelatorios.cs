@@ -1,4 +1,5 @@
 using GestaoEspacosDesportivos.Dominio.Reservas;
+using GestaoEspacosDesportivos.Dominio.Espacos;
 
 namespace GestaoEspacosDesportivos.Servicos;
 
@@ -48,11 +49,11 @@ public class GestorRelatorios
     /// </summary>
     public double CalcularTaxaOcupacao(string espacoId, DateOnly inicio, DateOnly fim, double horasDisponiveisPorDia = 14.0)
     {
-        var espaco = gestorEspacos.ObterPorId(espacoId);
+        EspacoDesportivo espaco = gestorEspacos.ObterPorId(espacoId);
         int totalDias = Math.Max(1, fim.DayNumber - inicio.DayNumber + 1);
         double horasDisponiveisTotais = totalDias * horasDisponiveisPorDia;
 
-        var reservasNoPeriodo = gestorReservas.ListarTodas()
+        IEnumerable<Reserva> reservasNoPeriodo = gestorReservas.ListarTodas()
             .Where(r => r.Espaco.Id.Equals(espaco.Id, StringComparison.OrdinalIgnoreCase)
                      && r.Data >= inicio 
                      && r.Data <= fim

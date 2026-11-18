@@ -67,7 +67,7 @@ public class Reserva
             throw new EstadoReservaInvalidoException($"Não é possível cancelar uma reserva no estado '{Estado}'.");
 
         // Libertar equipamentos alocados
-        foreach (var item in ItensEquipamento)
+        foreach (ItemEquipamentoReserva item in ItensEquipamento)
         {
             item.Equipamento.Libertar(item.QuantidadeRequisitada);
         }
@@ -84,7 +84,7 @@ public class Reserva
             throw new EstadoReservaInvalidoException($"Apenas reservas 'Confirmada' podem ser concluídas. Estado atual: '{Estado}'.");
 
         // Devolução operacional dos equipamentos
-        foreach (var item in ItensEquipamento)
+        foreach (ItemEquipamentoReserva item in ItensEquipamento)
         {
             item.Equipamento.Libertar(item.QuantidadeRequisitada);
         }
@@ -100,7 +100,7 @@ public class Reserva
         if (Estado != EstadoReserva.Pendente)
             throw new EstadoReservaInvalidoException($"Apenas reservas 'Pendente' podem expirar. Estado atual: '{Estado}'.");
 
-        foreach (var item in ItensEquipamento)
+        foreach (ItemEquipamentoReserva item in ItensEquipamento)
         {
             item.Equipamento.Libertar(item.QuantidadeRequisitada);
         }
@@ -140,7 +140,7 @@ public class Reserva
     /// </summary>
     public double DuracaoHoras()
     {
-        var duracao = (HoraFim.ToTimeSpan() - HoraInicio.ToTimeSpan()).TotalHours;
+        double duracao = (HoraFim.ToTimeSpan() - HoraInicio.ToTimeSpan()).TotalHours;
         return Math.Max(0.5, duracao);
     }
 

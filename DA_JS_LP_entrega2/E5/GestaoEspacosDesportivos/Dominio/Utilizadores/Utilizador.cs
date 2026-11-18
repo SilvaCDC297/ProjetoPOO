@@ -74,9 +74,9 @@ public abstract class Utilizador
     /// </summary>
     public static string HashPassword(string password)
     {
-        using var sha = System.Security.Cryptography.SHA256.Create();
-        var bytes = System.Text.Encoding.UTF8.GetBytes(password);
-        var hash = sha.ComputeHash(bytes);
+        using System.Security.Cryptography.SHA256 sha = System.Security.Cryptography.SHA256.Create();
+        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(password);
+        byte[] hash = sha.ComputeHash(bytes);
         return Convert.ToHexString(hash);
     }
 

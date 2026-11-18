@@ -33,7 +33,7 @@ public class PersistenciaFicheiro<T> : IPersistencia<T>
 
     private void GarantirDiretorioExistente()
     {
-        var dir = Path.GetDirectoryName(caminhoFicheiro);
+        string? dir = Path.GetDirectoryName(caminhoFicheiro);
         if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
         {
             Directory.CreateDirectory(dir);
@@ -49,13 +49,13 @@ public class PersistenciaFicheiro<T> : IPersistencia<T>
                 return new List<T>();
             }
 
-            var json = File.ReadAllText(caminhoFicheiro);
+            string json = File.ReadAllText(caminhoFicheiro);
             if (string.IsNullOrWhiteSpace(json))
             {
                 return new List<T>();
             }
 
-            var dados = JsonSerializer.Deserialize<List<T>>(json, jsonOptions);
+            List<T>? dados = JsonSerializer.Deserialize<List<T>>(json, jsonOptions);
             return dados ?? new List<T>();
         }
         catch (Exception ex)
@@ -69,10 +69,10 @@ public class PersistenciaFicheiro<T> : IPersistencia<T>
         try
         {
             GarantirDiretorioExistente();
-            var json = JsonSerializer.Serialize(dados, jsonOptions);
+            string json = JsonSerializer.Serialize(dados, jsonOptions);
 
             // Escrita atómica através de ficheiro temporário
-            var tempFile = caminhoFicheiro + ".tmp";
+            string tempFile = caminhoFicheiro + ".tmp";
             File.WriteAllText(tempFile, json);
             File.Move(tempFile, caminhoFicheiro, overwrite: true);
         }
@@ -87,7 +87,7 @@ public class PersistenciaFicheiro<T> : IPersistencia<T>
         if (!File.Exists(caminhoFicheiro)) return true;
         try
         {
-            var info = new FileInfo(caminhoFicheiro);
+            FileInfo info = new FileInfo(caminhoFicheiro);
             return info.Length > 0;
         }
         catch

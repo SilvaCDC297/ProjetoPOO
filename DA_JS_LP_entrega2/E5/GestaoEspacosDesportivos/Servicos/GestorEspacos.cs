@@ -33,7 +33,7 @@ public class GestorEspacos
     {
         ArgumentNullException.ThrowIfNull(espacoAtualizado);
 
-        var index = espacos.FindIndex(e => e.Id.Equals(espacoAtualizado.Id, StringComparison.OrdinalIgnoreCase));
+        int index = espacos.FindIndex(e => e.Id.Equals(espacoAtualizado.Id, StringComparison.OrdinalIgnoreCase));
         if (index == -1)
             throw new EspacoInexistenteException(espacoAtualizado.Id);
 
@@ -43,7 +43,7 @@ public class GestorEspacos
 
     public void RemoverEspaco(string id)
     {
-        var espaco = ObterPorId(id);
+        EspacoDesportivo espaco = ObterPorId(id);
         espacos.Remove(espaco);
         persistencia.Guardar(espacos);
     }
@@ -53,7 +53,7 @@ public class GestorEspacos
         if (string.IsNullOrWhiteSpace(id))
             throw new DadosInvalidosException("Id", "O identificador do espaço é obrigatório.");
 
-        var espaco = espacos.FirstOrDefault(e => e.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
+        EspacoDesportivo? espaco = espacos.FirstOrDefault(e => e.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
         if (espaco == null)
             throw new EspacoInexistenteException(id);
 

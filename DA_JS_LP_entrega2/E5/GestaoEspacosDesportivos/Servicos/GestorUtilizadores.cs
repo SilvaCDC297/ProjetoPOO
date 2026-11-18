@@ -63,7 +63,7 @@ public class GestorUtilizadores
             throw new LoginInvalidoException("Email e password devem ser preenchidos.");
 
         email = email.Trim().ToLowerInvariant();
-        var user = utilizadores.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+        Utilizador? user = utilizadores.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
 
         if (user == null || !user.Autenticar(password))
         {

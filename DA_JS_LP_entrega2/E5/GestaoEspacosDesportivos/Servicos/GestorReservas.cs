@@ -59,14 +59,16 @@ public class GestorReservas
         }
 
         string novoId = $"RES-{DateTime.Now.Ticks % 1000000:D6}";
-        var novaReserva = new Reserva(novoId, utilizador, espaco, data, horaInicio, horaFim);
+        Reserva novaReserva = new Reserva(novoId, utilizador, espaco, data, horaInicio, horaFim);
 
         // Processar equipamentos opcionais requeridos
         if (equipamentosRequisitados != null && equipamentosRequisitados.Count > 0)
         {
-            foreach (var (idEq, qtd) in equipamentosRequisitados)
+            foreach (KeyValuePair<string, int> item in equipamentosRequisitados)
             {
-                var eq = espaco.Equipamentos.FirstOrDefault(e => e.Id.Equals(idEq, StringComparison.OrdinalIgnoreCase));
+                string idEq = item.Key;
+                int qtd = item.Value;
+                Equipamento? eq = espaco.Equipamentos.FirstOrDefault(e => e.Id.Equals(idEq, StringComparison.OrdinalIgnoreCase));
                 if (eq == null)
                     throw new DadosInvalidosException("Equipamento", $"O equipamento '{idEq}' não pertence ao recinto selecionado.");
 
@@ -84,7 +86,7 @@ public class GestorReservas
     /// </summary>
     public void ConfirmarReserva(string reservaId)
     {
-        var reserva = ObterPorId(reservaId);
+        Reserva reserva = ObterPorId(reservaId);
         reserva.Confirmar();
         persistencia.Guardar(reservas);
     }
@@ -95,7 +97,7 @@ public class GestorReservas
     public void CancelarReserva(string reservaId, Utilizador utilizador)
     {
         ArgumentNullException.ThrowIfNull(utilizador);
-        var reserva = ObterPorId(reservaId);
+        Reserva reserva = ObterPorId(reservaId);
 
         bool isAdmin = utilizador.PodeGerirInstalacoes();
         bool isTitular = reserva.Utilizador.Id.Equals(utilizador.Id, StringComparison.OrdinalIgnoreCase);
@@ -112,7 +114,7 @@ public class GestorReservas
     /// </summary>
     public void ConcluirReserva(string reservaId)
     {
-        var reserva = ObterPorId(reservaId);
+        Reserva reserva = ObterPorId(reservaId);
         reserva.Concluir();
         persistencia.Guardar(reservas);
     }
@@ -122,10 +124,10 @@ public class GestorReservas
     /// </summary>
     public int ProcessarReservasExpiradas(TimeSpan prazoLimite)
     {
-        var agora = DateTime.Now;
+        DateTime agora = DateTime.Now;
         int expiradas = 0;
 
-        foreach (var r in reservas.Where(r => r.Estado == EstadoReserva.Pendente))
+        foreach (Reserva r in reservas.Where(r => r.Estado == EstadoReserva.Pendente))
         {
             if (agora - r.DataCriacao > prazoLimite)
             {
@@ -144,7 +146,7 @@ public class GestorReservas
 
     public Reserva ObterPorId(string reservaId)
     {
-        var reserva = reservas.FirstOrDefault(r => r.Id.Equals(reservaId, StringComparison.OrdinalIgnoreCase));
+        Reserva? reserva = reservas.FirstOrDefault(r => r.Id.Equals(reservaId, StringComparison.OrdinalIgnoreCase));
         if (reserva == null)
             throw new DadosInvalidosException("ReservaId", $"A reserva #{reservaId} não existe.");
 

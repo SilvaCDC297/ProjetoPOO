@@ -21,15 +21,15 @@ public class Program
 
         // 1. Configuração da Camada de Persistência em Ficheiros JSON
         string pastaDados = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dados");
-        var pUtilizadores = new PersistenciaFicheiro<Utilizador>(Path.Combine(pastaDados, "utilizadores.json"));
-        var pEspacos = new PersistenciaFicheiro<EspacoDesportivo>(Path.Combine(pastaDados, "espacos.json"));
-        var pReservas = new PersistenciaFicheiro<Reserva>(Path.Combine(pastaDados, "reservas.json"));
+        IPersistencia<Utilizador> pUtilizadores = new PersistenciaFicheiro<Utilizador>(Path.Combine(pastaDados, "utilizadores.json"));
+        IPersistencia<EspacoDesportivo> pEspacos = new PersistenciaFicheiro<EspacoDesportivo>(Path.Combine(pastaDados, "espacos.json"));
+        IPersistencia<Reserva> pReservas = new PersistenciaFicheiro<Reserva>(Path.Combine(pastaDados, "reservas.json"));
 
         // 2. Inicialização dos Gestores de Negócio (Dependency Injection)
-        var gestorUtilizadores = new GestorUtilizadores(pUtilizadores);
-        var gestorEspacos = new GestorEspacos(pEspacos);
-        var gestorReservas = new GestorReservas(pReservas);
-        var gestorRelatorios = new GestorRelatorios(gestorReservas, gestorEspacos);
+        GestorUtilizadores gestorUtilizadores = new GestorUtilizadores(pUtilizadores);
+        GestorEspacos gestorEspacos = new GestorEspacos(pEspacos);
+        GestorReservas gestorReservas = new GestorReservas(pReservas);
+        GestorRelatorios gestorRelatorios = new GestorRelatorios(gestorReservas, gestorEspacos);
 
         // 3. Seeding inicial de dados caso o sistema esteja vazio
         InicializarDadosIniciais(gestorUtilizadores, gestorEspacos, gestorReservas);
@@ -62,25 +62,25 @@ public class Program
             Console.WriteLine("[SETUP] A inicializar recintos desportivos e equipamentos...");
             
             // Campo de Futebol
-            var campoFutebol = new CampoFutebol("ESP-FUT-01", "Campo Sintético Principal", "Complexo Exterior - Setor Norte", 22, 45.0, "Sintético 4G", true);
+            CampoFutebol campoFutebol = new CampoFutebol("ESP-FUT-01", "Campo Sintético Principal", "Complexo Exterior - Setor Norte", 22, 45.0, "Sintético 4G", true);
             campoFutebol.AdicionarEquipamento(new Equipamento("EQ-BOLA-FUT", "Bolas de Futebol Regulamentares", 10, EstadoEquipamento.Bom));
             campoFutebol.AdicionarEquipamento(new Equipamento("EQ-REDE-FUT", "Redes de Baliza Pro", 2, EstadoEquipamento.Novo));
             gEspacos.AdicionarEspaco(campoFutebol);
 
             // Court de Ténis
-            var courtTenis = new CourtTenis("ESP-TEN-01", "Court Central de Ténis", "Complexo Central", 4, 20.0, "Terra Batida", true);
+            CourtTenis courtTenis = new CourtTenis("ESP-TEN-01", "Court Central de Ténis", "Complexo Central", 4, 20.0, "Terra Batida", true);
             courtTenis.AdicionarEquipamento(new Equipamento("EQ-RAQ-TEN", "Raquetes de Ténis Wilson", 8, EstadoEquipamento.Bom));
             courtTenis.AdicionarEquipamento(new Equipamento("EQ-BOLA-TEN", "Tubos de Bolas de Ténis (Pack 4)", 15, EstadoEquipamento.Novo));
             gEspacos.AdicionarEspaco(courtTenis);
 
             // Pavilhão Polidesportivo
-            var pavilhao = new Pavilhao("ESP-PAV-01", "Pavilhão Polidesportivo Coberto", "Edifício Interior", 100, 60.0, "Piso de Madeira Flutuante");
+            Pavilhao pavilhao = new Pavilhao("ESP-PAV-01", "Pavilhão Polidesportivo Coberto", "Edifício Interior", 100, 60.0, "Piso de Madeira Flutuante");
             pavilhao.AdicionarEquipamento(new Equipamento("EQ-BOLA-BASQ", "Bolas de Basquetebol Molten", 12, EstadoEquipamento.Bom));
             pavilhao.AdicionarEquipamento(new Equipamento("EQ-COLCH-GYM", "Colchões de Proteção e Ginástica", 20, EstadoEquipamento.Bom));
             gEspacos.AdicionarEspaco(pavilhao);
 
             // Sala de Fitness
-            var fitness = new SalaFitness("ESP-FIT-01", "Estúdio de Fitness & Pilates", "Piso 1 - Ginásio", 25, 30.0, true, true);
+            SalaFitness fitness = new SalaFitness("ESP-FIT-01", "Estúdio de Fitness & Pilates", "Piso 1 - Ginásio", 25, 30.0, true, true);
             fitness.AdicionarEquipamento(new Equipamento("EQ-TAP-YOGA", "Tapetes de Yoga/Pilates", 30, EstadoEquipamento.Novo));
             gEspacos.AdicionarEspaco(fitness);
         }
@@ -95,11 +95,11 @@ public class Program
         Console.WriteLine("\n--- [TESTE 1: AUTENTICAÇÃO E ENCAPSULAMENTO] ---");
         try
         {
-            var user = gUsers.Autenticar("dinis@estudante.pt", "pass123");
+            Utilizador user = gUsers.Autenticar("dinis@estudante.pt", "pass123");
             Console.WriteLine($"✅ Login efetuado com sucesso: {user}");
             Console.WriteLine($"   Pode gerir instalações (Polimorfismo)? {user.PodeGerirInstalacoes()}");
 
-            var admin = (Administrador)gUsers.Autenticar("admin@complexo.pt", "admin123");
+            Administrador admin = (Administrador)gUsers.Autenticar("admin@complexo.pt", "admin123");
             Console.WriteLine($"✅ Login admin efetuado com sucesso: {admin}");
             Console.WriteLine($"   Pode gerir instalações (Polimorfismo)? {admin.PodeGerirInstalacoes()}");
         }
@@ -121,8 +121,8 @@ public class Program
         }
 
         Console.WriteLine("\n--- [TESTE 3: HERANÇA E POLIMORFISMO NAS INSTALAÇÕES DESPORTIVAS] ---");
-        var espacos = gEspacos.ListarTodos();
-        foreach (var esp in espacos)
+        List<EspacoDesportivo> espacos = gEspacos.ListarTodos();
+        foreach (EspacoDesportivo esp in espacos)
         {
             double duracao = 2.0; // 2 horas
             double custo = esp.CalcularCustoReserva(duracao);
@@ -130,7 +130,7 @@ public class Program
             Console.WriteLine($"   Descrição Técnica: {esp.ObterDescricaoTecnica()}");
             Console.WriteLine($"   Cálculo Polimórfico para {duracao}h: {custo:C}");
             Console.WriteLine($"   Equipamentos disponíveis ({esp.Equipamentos.Count}):");
-            foreach (var eq in esp.Equipamentos)
+            foreach (Equipamento eq in esp.Equipamentos)
             {
                 Console.WriteLine($"     - {eq}");
             }
@@ -140,13 +140,13 @@ public class Program
         Reserva? reserva1 = null;
         try
         {
-            var cliente = gUsers.ObterPorEmail("dinis@estudante.pt")!;
-            var campo = gEspacos.ObterPorId("ESP-FUT-01");
-            var dataJogo = DateOnly.FromDateTime(DateTime.Today.AddDays(2));
-            var ini = new TimeOnly(18, 0);
-            var fim = new TimeOnly(19, 30);
+            Utilizador cliente = gUsers.ObterPorEmail("dinis@estudante.pt")!;
+            EspacoDesportivo campo = gEspacos.ObterPorId("ESP-FUT-01");
+            DateOnly dataJogo = DateOnly.FromDateTime(DateTime.Today.AddDays(2));
+            TimeOnly ini = new TimeOnly(18, 0);
+            TimeOnly fim = new TimeOnly(19, 30);
 
-            var eqs = new Dictionary<string, int>
+            Dictionary<string, int> eqs = new Dictionary<string, int>
             {
                 { "EQ-BOLA-FUT", 2 }
             };
@@ -165,12 +165,12 @@ public class Program
         Console.WriteLine("\n--- [TESTE 5: REGRA DE OURO - CONFLITO DE HORÁRIOS (SOBREPOSIÇÃO)] ---");
         try
         {
-            var outroCliente = gUsers.ObterPorEmail("joao@estudante.pt")!;
-            var campo = gEspacos.ObterPorId("ESP-FUT-01");
-            var dataJogo = DateOnly.FromDateTime(DateTime.Today.AddDays(2));
+            Utilizador outroCliente = gUsers.ObterPorEmail("joao@estudante.pt")!;
+            EspacoDesportivo campo = gEspacos.ObterPorId("ESP-FUT-01");
+            DateOnly dataJogo = DateOnly.FromDateTime(DateTime.Today.AddDays(2));
             // Tentativa de marcar das 18:30 às 20:00 (colide com a reserva anterior 18:00 - 19:30)
-            var iniConflito = new TimeOnly(18, 30);
-            var fimConflito = new TimeOnly(20, 00);
+            TimeOnly iniConflito = new TimeOnly(18, 30);
+            TimeOnly fimConflito = new TimeOnly(20, 00);
 
             Console.WriteLine("Tentando agendar horário com sobreposição (18:30 - 20:00)...");
             gReservas.CriarReserva(outroCliente, campo, dataJogo, iniConflito, fimConflito);
@@ -202,15 +202,17 @@ public class Program
         try
         {
             Console.WriteLine($"Total de Reservas Registadas: {gRelatorios.GetTotalReservas()}");
-            var porEspaco = gRelatorios.GetReservasPorEspaco();
+            Dictionary<string, int> porEspaco = gRelatorios.GetReservasPorEspaco();
             Console.WriteLine("Reservas agrupadas por espaço:");
-            foreach (var (nomeEspaco, total) in porEspaco)
+            foreach (KeyValuePair<string, int> par in porEspaco)
             {
+                string nomeEspaco = par.Key;
+                int total = par.Value;
                 Console.WriteLine($"   - {nomeEspaco}: {total} reserva(s)");
             }
 
-            var inicio = DateOnly.FromDateTime(DateTime.Today);
-            var fim = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
+            DateOnly inicio = DateOnly.FromDateTime(DateTime.Today);
+            DateOnly fim = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
             double taxa = gRelatorios.CalcularTaxaOcupacao("ESP-FUT-01", inicio, fim);
             Console.WriteLine($"Taxa de Ocupação do Campo Principal para os próximos 7 dias: {taxa:F2}%");
         }

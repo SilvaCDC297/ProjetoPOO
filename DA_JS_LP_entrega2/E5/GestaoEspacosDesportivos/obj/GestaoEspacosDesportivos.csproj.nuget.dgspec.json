@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\diniz\\OneDrive\\Documentos\\Legumix1\\ProjetoPOO\\DA_JS_LP_Entrega2\\E5\\GestaoEspacosDesportivos\\GestaoEspacosDesportivos.csproj": {}
+    "C:\\Users\\diniz\\OneDrive\\Documentos\\Legumix1\\ProjetoPOO\\DA_JS_LP_entrega2\\E5\\GestaoEspacosDesportivos\\GestaoEspacosDesportivos.csproj": {}
   },
   "projects": {
-    "C:\\Users\\diniz\\OneDrive\\Documentos\\Legumix1\\ProjetoPOO\\DA_JS_LP_Entrega2\\E5\\GestaoEspacosDesportivos\\GestaoEspacosDesportivos.csproj": {
+    "C:\\Users\\diniz\\OneDrive\\Documentos\\Legumix1\\ProjetoPOO\\DA_JS_LP_entrega2\\E5\\GestaoEspacosDesportivos\\GestaoEspacosDesportivos.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\diniz\\OneDrive\\Documentos\\Legumix1\\ProjetoPOO\\DA_JS_LP_Entrega2\\E5\\GestaoEspacosDesportivos\\GestaoEspacosDesportivos.csproj",
+        "projectUniqueName": "C:\\Users\\diniz\\OneDrive\\Documentos\\Legumix1\\ProjetoPOO\\DA_JS_LP_entrega2\\E5\\GestaoEspacosDesportivos\\GestaoEspacosDesportivos.csproj",
         "projectName": "GestaoEspacosDesportivos",
-        "projectPath": "C:\\Users\\diniz\\OneDrive\\Documentos\\Legumix1\\ProjetoPOO\\DA_JS_LP_Entrega2\\E5\\GestaoEspacosDesportivos\\GestaoEspacosDesportivos.csproj",
+        "projectPath": "C:\\Users\\diniz\\OneDrive\\Documentos\\Legumix1\\ProjetoPOO\\DA_JS_LP_entrega2\\E5\\GestaoEspacosDesportivos\\GestaoEspacosDesportivos.csproj",
         "packagesPath": "C:\\Users\\diniz\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\diniz\\OneDrive\\Documentos\\Legumix1\\ProjetoPOO\\DA_JS_LP_Entrega2\\E5\\GestaoEspacosDesportivos\\obj\\",
+        "outputPath": "C:\\Users\\diniz\\OneDrive\\Documentos\\Legumix1\\ProjetoPOO\\DA_JS_LP_entrega2\\E5\\GestaoEspacosDesportivos\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
